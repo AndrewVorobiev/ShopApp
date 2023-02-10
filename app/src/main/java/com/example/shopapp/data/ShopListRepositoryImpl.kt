@@ -1,54 +1,79 @@
 package com.example.shopapp.data
 
+import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.example.shopapp.domain.ShopItem
 import com.example.shopapp.domain.ShopListRepository
 
-object ShopListRepositoryImpl : ShopListRepository {
 
-    private val shopListLD = MutableLiveData<List<ShopItem>>()
+// Данный класс реализует ShopListRepository, а также класс Dao.
+// Чтобы правильно работало передаю контекст в виде Application
+class ShopListRepositoryImpl(application: Application) : ShopListRepository {
 
-    //sortedSetOf - позволяет сделать сортированный список, используя метод compareTo,
-    // где мы один объект сравниваем по опрделенному параметру, в нашем случае по ID
-    private val shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
+    // Создаю переменную, где объявляю  базу данных с методом shopListDao
+    private val shopListDao = AppDatabase.getInstance(application).shopListDao()
 
-    // Переменная которая хранит id
-    private var autoIncrementId = 0
+    // Добавляем ShopListMapper для использования в методах
+    private val mapper = ShopListMapper()
+
 
     override fun addShopItem(shopItem: ShopItem) {
-        // Условие говорит о том, что если ID элемента равен неопределенному ID,
-        // то мы присвоем ему id, в противном случае мы ничего не будем делать,
-        // и элемент с существующим ID добавится в коллекцию.
-        // Это необходимо, чтобы не возникала ошибка при редактировании
-        if (shopItem.id == ShopItem.UNDEFINED_ID) {
-            shopItem.id = autoIncrementId++
-        }
-        shopList.add(shopItem)
-        updateList()
+        shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
     }
 
     override fun deleteShopItem(shopItem: ShopItem) {
-        shopList.remove(shopItem)
-        updateList()
+        shopListDao.deleteShopItem(shopItem.id)
     }
 
     override fun editShopItem(shopItem: ShopItem) {
-        val oldItem = getShopItem(shopItem.id)
-        shopList.remove(oldItem)
-        addShopItem(shopItem)
+        // Потому что в Dao реализованно так, что addShopItem, не тоько добавляет, но и заменяет
+        shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
+
     }
 
     override fun getShopItem(shopItemId: Int): ShopItem {
-        return shopList.find { it.id == shopItemId }
-            ?: throw java.lang.RuntimeException("Element with id $shopItemId not found")
+        // Получаем объект dbModel в котором получаем объект из базы
+        val dbModel = shopListDao.getShopItem(shopItemId)
+        return mapper.mapDbModelToEntity(dbModel)
     }
 
-    override fun getShopList(): LiveData<List<ShopItem>> {
-        return shopListLD
-    }
 
-    private fun updateList() {
-        shopListLD.value = shopList.toList()
+    // 1 Вариант - Transformations.map. Передаем коллекцию из базы данных
+    // и преобразовываем её в таблицу. Это тоже самое что и MediatorLiveData. Но прощец
+    override fun getShopList(): LiveData<List<ShopItem>> = Transformations.map(
+        shopListDao.getShopList()
+    ) {
+        mapper.mapListDbModelToListEntity(it)
     }
 }
+
+
+
+
+
+
+            // 2 Вариант
+
+            // ------------------------------------------------------------------
+            //    override fun getShopList(): LiveData<List<ShopItem>> =
+            //    MediatorLiveData<List<ShopItem>>().apply {
+            //          addSource(shopListDao.getShopList()) {
+            //              value = mapper.mapListDbModelToListEntity(it)
+            // ------------------------------------------------------------------
+
+            // Создаем экземпляр класса MediatorLiveData - он помогает связать данные между LiveData
+
+            // Первым делом нужно указать ему источник данных, объекты какой LiveData
+            // Он будет принимать. После мы можем установить значение через метод setValue
+
+            // addSource(shopListDao.getShopList()) - возвращает объект LiveData, в
+            // этом объекте лежит коллекция элементов dbmodel,
+            // которую мы не можем передать в другме слои
+            // Поэтому нам необходимо каким-то образов перехватывать эти данные, чтобы получать
+            // обновления данных на экране для этого существует MediatorLiveData
+
+            //
+
