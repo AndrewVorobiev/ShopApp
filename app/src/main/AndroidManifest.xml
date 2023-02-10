@@ -12,7 +12,7 @@
         android:theme="@style/Theme.ShopApp"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.MainActivity"
+            android:name="com.example.shopapp.presentation.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
