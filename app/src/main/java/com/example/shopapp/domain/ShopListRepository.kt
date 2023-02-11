@@ -2,6 +2,7 @@ package com.example.shopapp.domain
 
 import androidx.lifecycle.LiveData
 
+// Здесь мы реализуем наши ранее созданые UseCase
 interface ShopListRepository {
 
     suspend fun addShopItem(shopItem: ShopItem)

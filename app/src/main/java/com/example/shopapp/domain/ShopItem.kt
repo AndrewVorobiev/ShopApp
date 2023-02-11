@@ -1,5 +1,6 @@
 package com.example.shopapp.domain
 
+// Здесь создаем экземпляр класса, который будет использоваться в бизнес-логике
 data class ShopItem(
 
     val name: String,
