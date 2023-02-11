@@ -3,9 +3,10 @@ package com.example.shopapp.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
 // Анотация @Entity вызывается для объявления классов "Таблицой",
 // в круглых скобках пишу название таблицы
-@Entity(tableName = "shop_item")
+@Entity(tableName = "shop_items")
 data class ShopItemDbModel(
 
     // Анотация @PrimaryKey вызываетя для того, чтобы генерировать автоматический ID

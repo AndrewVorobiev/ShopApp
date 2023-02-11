@@ -30,7 +30,7 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
-    namespace 'com.sumin.shoppinglist'
+    namespace 'com.example.shopapp'
 }
 
 dependencies {

@@ -2,10 +2,11 @@
 <layout>
 
     <data>
-
+        <!--  Здесь мы объявляем имя переменной и имя пакета,
+              чтобы обращаться к элементам XML файла изнутри макета -->
         <variable
             name="viewModel"
-            type="com.sumin.shoppinglist.presentation.ShopItemViewModel"
+            type="com.example.shopapp.presentation.ShopItemViewModel"
             />
     </data>
 
@@ -15,7 +16,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.ShopItemFragment"
+        tools:context="com.example.shopapp.presentation.ShopItemFragment"
         >
 
         <com.google.android.material.textfield.TextInputLayout

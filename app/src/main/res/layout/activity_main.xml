@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--Для того чтобы работать с Data Binding, необходимо в код XML добавить layout-->
 <layout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -7,7 +9,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.MainActivity"
+        tools:context="com.example.shopapp.presentation.MainActivity"
         >
 
         <androidx.recyclerview.widget.RecyclerView
